@@ -13,3 +13,17 @@ class Professor(ProfessorBase):
 
     class Config:
         orm_mode = True
+
+class OficinaBase(BaseModel):
+    titulo: str
+    descricao: str
+
+class OficinaCreate(OficinaBase):
+    pass
+
+class Oficina(OficinaBase):
+    id: int
+    professor_id: int
+
+    class Config:
+        orm_mode = True
