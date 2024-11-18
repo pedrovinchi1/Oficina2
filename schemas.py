@@ -27,3 +27,36 @@ class Oficina(OficinaBase):
 
     class Config:
         orm_mode = True
+
+class AlunoBase(BaseModel):
+    nome: str
+    registro_academico: str
+
+class AlunoCreate(AlunoBase):
+    pass
+
+class Aluno(AlunoBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class PresencaBase(BaseModel):
+    aluno_id: int
+    oficina_id: int
+
+class PresencaCreate(PresencaBase):
+    pass
+
+class Presenca(PresencaBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
