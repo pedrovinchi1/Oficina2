@@ -18,3 +18,20 @@ def create_professor(db: Session, professor: schemas.ProfessorCreate):
 
 def get_oficinas(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Oficina).offset(skip).limit(limit).all()
+
+def create_oficina(db: Session, oficina: schemas.OficinaCreate, professor_id: int):
+    db_oficina = models.Oficina(**oficina.dict(), professor_id=professor_id)
+    db.add(db_oficina)
+    db.commit()
+    db.refresh(db_oficina)
+    return db_oficina
+
+def get_aluno(db: Session, aluno_id: int):
+    return db.query(models.Aluno).filter(models.Aluno.id == aluno_id).first()
+
+def create_aluno(db: Session, aluno: schemas.AlunoCreate):
+    db_aluno = models.Aluno(**aluno.dict())
+    db.add(db_aluno)
+    db.commit()
+    db.refresh(db_aluno)
+    return db_aluno
