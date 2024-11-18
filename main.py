@@ -33,3 +33,16 @@ def create_professor(professor: schemas.ProfessorCreate, db: Session = Depends(d
 @app.get("/professores/me", response_model=schemas.Professor)
 def read_professor_me(current_professor: schemas.Professor = Depends(auth.get_current_professor)):
     return current_professor
+@app.post("/oficinas/", response_model=schemas.Oficina)
+def create_oficina(oficina: schemas.OficinaCreate, db: Session = Depends(database.get_db), current_professor: schemas.Professor = Depends(auth.get_current_professor)):
+    return crud.create_oficina(db=db, oficina=oficina, professor_id=current_professor.id)
+
+@app.post("/presencas/", response_model=schemas.Presenca)
+def create_presenca(presenca: schemas.PresencaCreate, db: Session = Depends(database.get_db), current_professor: schemas.Professor = Depends(auth.get_current_professor)):
+    db_aluno = crud.get_aluno(db, aluno_id=presenca.aluno_id)
+    if not db_aluno:
+        raise HTTPException(status_code=400, detail="Aluno not found")
+    db_oficina = crud.get_oficina(db, oficina_id=presenca.oficina_id)
+    if not db_oficina:
+        raise HTTPException(status_code=400, detail="Oficina not found")
+    return crud.create_presenca(db=db, presenca=presenca)
