@@ -74,7 +74,7 @@ button:hover {
     padding: 0; /* Remove o padding padrão */
     margin: 0; /* Remove a margem padrão */
     display: flex; /* Exibe os itens em linha */
-    text-align: center;
+    justify-content: center;
 }
 
 .menu ul li {
