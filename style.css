@@ -56,3 +56,41 @@ button {
 button:hover {
     background-color: #555;
 }
+
+/* Estilo para o menu de navegação */
+.menu {
+    max-width: 100%; 
+    max-height: 100%;
+    background-color: #f8f8f8; /* Cor de fundo do menu */
+    padding: 10px; /* Espaçamento interno */
+    border-radius: 0px; /* Bordas arredondadas */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.menu ul {
+    list-style-type: none; /* Remove os marcadores da lista */
+    padding: 0; /* Remove o padding padrão */
+    margin: 0; /* Remove a margem padrão */
+    display: flex; /* Exibe os itens em linha */
+    text-align: center;
+}
+
+.menu ul li {
+    margin-right: 20px; /* Espaço entre os itens do menu */
+    text-align: center;
+}
+
+.menu ul li a {
+    text-decoration: none; /* Remove o sublinhado dos links */
+    color: #333; /* Cor do texto */
+    font-weight: bold; /* Texto em negrito */
+    text-align: center;
+    transition: color 0.3s; /* Transição suave para a cor */
+}
+
+.menu ul li a:hover {
+    color: #007BFF; /* Cor ao passar o mouse */
+    text-decoration: underline; /* Sublinha ao passar o mouse */
+}
