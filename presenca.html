@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Emissão de Certificados</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Emissão de Certificados</h1>
+    </header>
+
+    <main>
+        <section id="presenca">
+            <h2>Registro de Presença</h2>
+            <form id="presenca-form">
+                <label for="registro-academico">Registro Acadêmico:</label>
+                <input type="text" id="registro-academico" name="registro_academico" required>
+                
+                <label for="oficina-id">ID da Oficina:</label>
+                <input type="number" id="oficina-id" name="oficina_id" required>
+                
+                <button type="submit">Registrar Presença</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
