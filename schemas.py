@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from fastapi import Form
 
 class ProfessorBase(BaseModel):
     nome: str
@@ -60,3 +61,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+class ProfessorForm(BaseModel):
+    nome: str
+    email: str
+    password: str

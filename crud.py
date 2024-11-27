@@ -35,3 +35,13 @@ def create_aluno(db: Session, aluno: schemas.AlunoCreate):
     db.commit()
     db.refresh(db_aluno)
     return db_aluno
+
+def create_presenca(db: Session, presenca: schemas.PresencaCreate):
+    db_presenca = models.Presenca(**presenca.dict())
+    db.add(db_presenca)
+    db.commit()
+    db.refresh(db_presenca)
+    return db_presenca
+
+def get_presencas(db: Session, oficina_id: int):
+    return db.query(models.Presenca).filter(models.Presenca.oficina_id == oficina_id).all()
