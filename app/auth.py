@@ -3,7 +3,10 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from . import crud, models, schemas, database
+from app import crud
+from app import models
+from app import schemas
+from app import database
 
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"

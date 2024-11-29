@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from .database import Base
+from app.database import Base
 
 class Professor(Base):
     __tablename__ = "professores"
@@ -15,6 +15,7 @@ class Oficina(Base):
     titulo = Column(String, index=True)
     descricao = Column(String)
     professor_id = Column(Integer, ForeignKey("professores.id"))
+    professor = relationship("Professor", back_populates="oficinas")
 
 class Aluno(Base):
     __tablename__ = "alunos"
@@ -27,5 +28,10 @@ class Presenca(Base):
     id = Column(Integer, primary_key=True, index=True)
     aluno_id = Column(Integer, ForeignKey("alunos.id"))
     oficina_id = Column(Integer, ForeignKey("oficinas.id"))
-    aluno = relationship("Aluno")
-    oficina = relationship("Oficina")
+    aluno = relationship("Aluno",back_populates="presencas")
+    oficina = relationship("Oficina",back_populates="presencas")
+
+
+Professor.oficinas = relationship("Oficina", back_populates="professor")
+Aluno.presencas = relationship("Presenca", back_populates="aluno")
+Oficina.presencas = relationship("Presenca", back_populates="oficina")

@@ -1,12 +1,18 @@
+from fastapi import Depends, Form, HTTPException
 from sqlalchemy.orm import Session
-from . import models, schemas
-from .utils import get_password_hash, verify_password
+from app import models
+from app import schemas
+from app.utils import get_password_hash, verify_password
 
 def get_professor(db: Session, professor_id: int):
     return db.query(models.Professor).filter(models.Professor.id == professor_id).first()
 
 def get_professor_by_email(db: Session, email: str):
     return db.query(models.Professor).filter(models.Professor.email == email).first()
+
+def verify_password(plain_password: str, hashed_password: str):
+    return verify_password(plain_password,hashed_password)
+    pass
 
 def create_professor(db: Session, professor: schemas.ProfessorCreate):
     hashed_password = get_password_hash(professor.password)
@@ -15,6 +21,7 @@ def create_professor(db: Session, professor: schemas.ProfessorCreate):
     db.commit()
     db.refresh(db_professor)
     return db_professor
+
 
 def get_oficinas(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Oficina).offset(skip).limit(limit).all()
