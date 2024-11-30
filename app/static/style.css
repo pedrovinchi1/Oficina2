@@ -18,6 +18,17 @@ main {
     align-items: center;
     padding: 2em;
 }
+footer {
+    text-align: center;
+    padding: 15px;
+    background: #8b8885;
+    color: white;
+    position: relative;
+    bottom: 0;
+    max-width: 100%; 
+    max-height: 100%;
+    box-sizing: border-box;
+}
 
 section {
     background-color: #fff;

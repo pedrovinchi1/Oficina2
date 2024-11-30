@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, FastAPI, Depends, Form, HTTPException, Request, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -80,7 +80,7 @@ async def read_cadastroprofessor(request: Request):
 
  
 @app.get("/cadastrooficina", response_class=HTMLResponse)
-async def read_cadastrooficinapage(request: Request):
+async def read_cadastrooficina(request: Request):
     return templates.TemplateResponse("cadastrooficina.html", {"request": request})
 
 
@@ -98,4 +98,11 @@ async def login(request: Request, db: Session = Depends(database.get_db), email:
     if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
     token = auth.create_access_token(data={"sub": user.email})
-    return {"access_token": token, "token_type": "bearer"}
+    response = RedirectResponse(url="/dashboard", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(key="access_token", value=f"Bearer {token}", httponly=True)
+    return response
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def read_dashboard(request: Request):
+    token = request.cookies.get("access_token")
+    return templates.TemplateResponse("dashboard.html", {"request": request,"token": token})   
