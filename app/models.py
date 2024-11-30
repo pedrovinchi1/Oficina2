@@ -7,7 +7,7 @@ class Professor(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, index=True)
     email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    hashed_password = Column(String, name="senha_hash")
     oficinas = relationship("Oficina", back_populates="professor")  
 
 class Oficina(Base):

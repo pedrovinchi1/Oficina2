@@ -18,6 +18,8 @@ class Professor(ProfessorBase):
 class OficinaBase(BaseModel):
     titulo: str
     descricao: str
+    professor_id: int
+    
 
 class OficinaCreate(OficinaBase):
     pass

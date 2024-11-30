@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI, Depends, Form, HTTPException, Request, status
+from fastapi import APIRouter, FastAPI, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -10,13 +10,14 @@ from app import models, schemas, crud, database, auth
 
 
 app = FastAPI()
+router = APIRouter()
 
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 models.Base.metadata.create_all(bind=database.engine)
 
 
-@app.post("/token", response_model=schemas.Token)
+@router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
         professor = auth.authenticate_professor(db, form_data.username, form_data.password)
         if not professor:
@@ -86,3 +87,15 @@ async def read_cadastrooficinapage(request: Request):
 @app.get("/presenca", response_class=HTMLResponse)
 async def read_presenca(request: Request):
     return templates.TemplateResponse("presenca.html", {"request": request})
+
+@app.get("/login", response_class=HTMLResponse)
+async def read_login_page(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.post("/login")
+async def login(request: Request, db: Session = Depends(database.get_db), email: str = Form(...), password: str = Form(...)):
+    user = crud.authenticate_user(db, email, password)
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    token = auth.create_access_token(data={"sub": user.email})
+    return {"access_token": token, "token_type": "bearer"}
