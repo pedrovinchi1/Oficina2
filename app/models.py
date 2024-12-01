@@ -21,15 +21,16 @@ class Oficina(Base):
 
 class Aluno(Base):
     __tablename__ = "alunos"
-    id = Column(Integer, primary_key=True, index=True)
+    registro_academico = Column(Integer, primary_key=True, index=True)
     nome = Column(String, index=True)
-    registro_academico = Column(String, unique=True, index=True)
-    presencas = relationship("Presenca", back_populates="aluno")  
+    email = Column(String, unique=True, index=True)
+    telefone = Column(String)
+    presencas = relationship("Presenca", back_populates="aluno")
 
 class Presenca(Base):
     __tablename__ = "presencas"
     id = Column(Integer, primary_key=True, index=True)
-    aluno_id = Column(Integer, ForeignKey("alunos.id"))
+    aluno_id = Column(Integer, ForeignKey("alunos.registro_academico"))
     oficina_id = Column(Integer, ForeignKey("oficinas.id"))
     aluno = relationship("Aluno", back_populates="presencas")  
     oficina = relationship("Oficina", back_populates="presencas") 

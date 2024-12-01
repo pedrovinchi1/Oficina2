@@ -54,3 +54,24 @@ def get_presencas(db: Session, oficina_id: int):
 
 def authenticate_user(db: Session, email: str, password: str):
     return authenticate_professor(db, email, password)
+
+def get_aluno(db: Session, registro_academico: str):
+    return db.query(models.Aluno).filter(models.Aluno.registro_academico == registro_academico).first()
+
+def get_aluno_by_email(db: Session, email: str):
+    return db.query(models.Aluno).filter(models.Aluno.email == email).first()
+
+def create_aluno(db: Session, aluno: schemas.AlunoCreate):
+    db_aluno = models.Aluno(
+        registro_academico=aluno.registro_academico,
+        nome=aluno.nome,
+        email=aluno.email,
+        telefone=aluno.telefone
+    )
+    db.add(db_aluno)
+    db.commit()
+    db.refresh(db_aluno)
+    return db_aluno
+
+def get_aluno(db: Session, aluno_id: str):
+    return db.query(models.Aluno).filter(models.Aluno.registro_academico == aluno_id).first()

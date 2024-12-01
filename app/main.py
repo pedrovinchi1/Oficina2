@@ -36,7 +36,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 async def create_professor(request: Request,nome: str = Form(...), email: str = Form(...), password: str = Form(...), db: Session = Depends(database.get_db)):
     db_professor = crud.get_professor_by_email(db, email=email)
     if db_professor:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        return templates.TemplateResponse("cadastroprofessor.html", {"request": request, "error": "Email already registered"})
     professor = schemas.ProfessorCreate(nome=nome, email=email, password=password)
     created_professor = crud.create_professor(db=db, professor=professor)
     token = auth.create_access_token(data={"sub": created_professor.email})
@@ -46,10 +46,10 @@ async def create_professor(request: Request,nome: str = Form(...), email: str = 
 
 
 @app.get("/professores/", response_model=schemas.Professor)
-async def create_professor(professor: schemas.ProfessorCreate ,db: Session = Depends(database.get_db)):
+async def create_professor(request: Request, professor: schemas.ProfessorCreate ,db: Session = Depends(database.get_db)):
     db_professor = crud.get_professor_by_email(db, email=professor.email)
     if db_professor:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        return templates.TemplateResponse("cadastroprofessor.html", {"request": request})
     return crud.create_professor(db=db, professor=professor)
 
 
@@ -125,7 +125,7 @@ async def read_login_page(request: Request):
 async def login(request: Request, db: Session = Depends(database.get_db), email: str = Form(...), password: str = Form(...)):
     user = crud.authenticate_user(db, email, password)
     if not user:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        return templates.TemplateResponse("index.html", {"request": request, "error": "Invalid email or password"})
     token = auth.create_access_token(data={"sub": user.email})
     response = RedirectResponse(url="/dashboard", status_code=status.HTTP_302_FOUND)
     response.set_cookie(key="access_token", value=f"Bearer {token}", httponly=True)
@@ -139,3 +139,16 @@ async def read_dashboard(request: Request):
 @app.get("/oficinacadastrada", response_class=HTMLResponse)
 async def read_oficinacadastrada(request: Request):
     return templates.TemplateResponse("oficinacadastrada.html", {"request": request})    
+
+@app.get("/cadastroaluno", response_class=HTMLResponse)
+async def read_cadastroaluno(request: Request):
+    return templates.TemplateResponse("cadastroaluno.html", {"request": request})
+
+@app.post("/alunos/", response_class=HTMLResponse)
+async def create_aluno(request: Request, registro_academico: str = Form(...), nome: str = Form(...), email: str = Form(...), telefone: str = Form(...), db: Session = Depends(database.get_db)):
+    db_aluno = crud.get_aluno_by_email(db, email=email)
+    if db_aluno:
+        return templates.TemplateResponse("cadastroaluno.html", {"request": request, "error": "Email already registered"})
+    aluno = schemas.AlunoCreate(registro_academico=registro_academico, nome=nome, email=email, telefone=telefone)
+    created_aluno = crud.create_aluno(db=db, aluno=aluno)
+    return templates.TemplateResponse("alunocadastrado.html", {"request": request, "aluno": created_aluno})

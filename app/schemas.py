@@ -32,14 +32,16 @@ class Oficina(OficinaBase):
         orm_mode = True
 
 class AlunoBase(BaseModel):
-    nome: str
     registro_academico: str
+    nome: str
+    email: str
+    telefone: Optional[str] = None
 
 class AlunoCreate(AlunoBase):
     pass
 
 class Aluno(AlunoBase):
-    id: int
+    presencas: List["Presenca"] = []
 
     class Config:
         orm_mode = True

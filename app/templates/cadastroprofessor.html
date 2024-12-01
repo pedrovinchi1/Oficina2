@@ -30,6 +30,11 @@
                         <li><a href="/">Voltar</a></li>
                     </ul>
                 </nav>
+                {% if error %}
+                <script>
+                    alert("{{ error }}");
+                </script>
+                {% endif %}
             </form>
         </section>
     </main>
