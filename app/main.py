@@ -1,3 +1,4 @@
+
 from typing import List
 from fastapi import APIRouter, FastAPI, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -61,12 +62,28 @@ async def create_presenca(presenca: schemas.PresencaCreate, db: Session = Depend
         raise HTTPException(status_code=400, detail="Oficina not found")
     return crud.create_presenca(db=db, presenca=presenca)
 
+@app.post("/create-oficina")
+async def create_oficina(request: Request, db: Session = Depends(database.get_db), titulo: str = Form(...), descricao: str = Form(...)):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    current_professor = await auth.get_current_professor(token=token.split(" ")[1], db=db)
+    new_oficina = models.Oficina(titulo=titulo, descricao=descricao, professor_id=current_professor.id)
+    db.add(new_oficina)
+    db.commit()
+    db.refresh(new_oficina)
+    return RedirectResponse(url="/dashboard", status_code=status.HTTP_302_FOUND)
 
-@app.get("/oficinas/", response_model=List[schemas.Oficina])
+
+@app.get("/consultaoficinas", response_model=List[schemas.Oficina])
 async def read_oficinas(skip: int = 0, limit: int = 10, db: Session = Depends(database.get_db)):
     oficinas = crud.get_oficinas(db, skip=skip, limit=limit)
     return oficinas
 
+@app.get("/oficinas", response_model=List[schemas.Oficina])
+async def list_oficinas(db: Session = Depends(database.get_db)):
+    oficinas = db.query(models.Oficina).all()
+    return oficinas
 
 
 @app.get("/", response_class=HTMLResponse)
