@@ -90,6 +90,13 @@ async def list_oficinas(db: Session = Depends(database.get_db)):
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.post("/cadastroprofessor", response_class=HTMLResponse)
+async def create_professor(request: Request, db: Session = Depends(database.get_db), nome: str = Form(...), email: str = Form(...), senha: str = Form(...)):
+    professor = models.Professor(nome=nome, email=email, hashed_password=auth.get_password_hash(senha))
+    db.add(professor)
+    db.commit()
+    db.refresh(professor)
+    return templates.TemplateResponse("professor_cadastrado.html", {"request": request, "professor": professor})
 
 @app.get("/cadastroprofessor", response_class=HTMLResponse)
 async def read_cadastroprofessor(request: Request):
