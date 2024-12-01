@@ -74,7 +74,7 @@ async def create_oficina(request: Request, db: Session = Depends(database.get_db
     db.add(new_oficina)
     db.commit()
     db.refresh(new_oficina)
-    return RedirectResponse(url="/dashboard", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/oficinacadastrada", status_code=status.HTTP_302_FOUND)
 
 
 @app.get("/consultaoficinas", response_model=List[schemas.Oficina])
@@ -131,4 +131,8 @@ async def login(request: Request, db: Session = Depends(database.get_db), email:
 @app.get("/dashboard", response_class=HTMLResponse)
 async def read_dashboard(request: Request):
     token = request.cookies.get("access_token")
-    return templates.TemplateResponse("dashboard.html", {"request": request,"token": token})   
+    return templates.TemplateResponse("dashboard.html", {"request": request,"token": token})  
+
+@app.get("/oficinacadastrada", response_class=HTMLResponse)
+async def read_oficinacadastrada(request: Request):
+    return templates.TemplateResponse("oficinacadastrada.html", {"request": request})    
