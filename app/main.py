@@ -33,12 +33,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/professores/", response_model=schemas.Professor)
-async def create_professor(nome: str = Form(...), email: str = Form(...), password: str = Form(...), db: Session = Depends(database.get_db)):
+async def create_professor(request: Request,nome: str = Form(...), email: str = Form(...), password: str = Form(...), db: Session = Depends(database.get_db)):
     db_professor = crud.get_professor_by_email(db, email=email)
     if db_professor:
         raise HTTPException(status_code=400, detail="Email already registered")
     professor = schemas.ProfessorCreate(nome=nome, email=email, password=password)
-    return crud.create_professor(db=db, professor=professor)
+    created_professor = crud.create_professor(db=db, professor=professor)
+    return templates.TemplateResponse("professorcadastrado.html", {"request": request, "professor": created_professor})
+
 
 @app.get("/professores/", response_model=schemas.Professor)
 async def create_professor(professor: schemas.ProfessorCreate ,db: Session = Depends(database.get_db)):
@@ -96,7 +98,7 @@ async def create_professor(request: Request, db: Session = Depends(database.get_
     db.add(professor)
     db.commit()
     db.refresh(professor)
-    return templates.TemplateResponse("professor_cadastrado.html", {"request": request, "professor": professor})
+    return templates.TemplateResponse("professorcadastrado.html", {"request": request, "professor": professor})
 
 @app.get("/cadastroprofessor", response_class=HTMLResponse)
 async def read_cadastroprofessor(request: Request):

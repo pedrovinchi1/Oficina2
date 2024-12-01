@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Emissão de Certificados</title>
-    <h2>Professor Cadastrado</h2>
     <link rel="stylesheet" href="/static/style.css">
     <script>
         // Redireciona para o dashboard após 5 segundos
@@ -14,13 +13,19 @@
     </script>
 </head>
 <body>
-    <h1>Professor Cadastrado com Sucesso</h1>
-    <p>Nome: {{ professor.nome }}</p>
-    <p>Email: {{ professor.email }}</p>
-    <p>Registro Acadêmico: {{ professor.registro_academico }}</p>
-    <p>Redirecionando para o dashboard em 5 segundos...</p>
-<footer>
-    <p>&copy;Todos os Direitos Rreservados</p>
-</footer>
+    <header>
+        <h2>Professor Cadastrado com Sucesso</h2>
+    </header>
+    <main>
+        <section>
+            <h1>Professor Cadastrado com Sucesso</h1>
+            <p>Nome: {{ professor.nome }}</p>
+            <p>Email: {{ professor.email }}</p>
+            <p>Redirecionando para o dashboard em 5 segundos...</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy;Todos os Direitos Rreservados</p>
+    </footer>
 </body>
 </html>
