@@ -39,7 +39,10 @@ async def create_professor(request: Request,nome: str = Form(...), email: str = 
         raise HTTPException(status_code=400, detail="Email already registered")
     professor = schemas.ProfessorCreate(nome=nome, email=email, password=password)
     created_professor = crud.create_professor(db=db, professor=professor)
-    return templates.TemplateResponse("professorcadastrado.html", {"request": request, "professor": created_professor})
+    token = auth.create_access_token(data={"sub": created_professor.email})
+    response = templates.TemplateResponse("professorcadastrado.html", {"request": request, "professor": created_professor})
+    response.set_cookie(key="access_token", value=f"Bearer {token}", httponly=True)
+    return response
 
 
 @app.get("/professores/", response_model=schemas.Professor)
