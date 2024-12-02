@@ -32,7 +32,7 @@ class Oficina(OficinaBase):
         orm_mode = True
 
 class AlunoBase(BaseModel):
-    registro_academico: str
+    registro_academico: int
     nome: str
     email: str
     telefone: Optional[str] = None
