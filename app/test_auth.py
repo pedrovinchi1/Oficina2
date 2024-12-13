@@ -6,7 +6,8 @@ from  sqlalchemy.orm import Session
 from app.auth import authenticate_professor, create_access_token, get_current_professor, SECRET_KEY, ALGORITHM
 from app import model, schemas, utils
 
-class MockSession
+class MockSession:
+
     def __init__(self,professor):
         self.professor = professor  
 
