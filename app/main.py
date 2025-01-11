@@ -52,4 +52,97 @@ async def create_presenca(
         raise HTTPException(status_code=400, detail="Oficina not found")
     return crud.create_presenca(db=db, presenca=presenca)
 
+<<<<<<< Updated upstream
 app.include_router(router)
+=======
+@app.post("/create-oficina")
+async def create_oficina(request: Request, db: Session = Depends(database.get_db), titulo: str = Form(...), descricao: str = Form(...)):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    current_professor = await auth.get_current_professor(token=token.split(" ")[1], db=db)
+    new_oficina = models.Oficina(titulo=titulo, descricao=descricao, professor_id=current_professor.id)
+    db.add(new_oficina)
+    db.commit()
+    db.refresh(new_oficina)
+    return RedirectResponse(url="/oficinacadastrada", status_code=status.HTTP_302_FOUND)
+
+
+@app.get("/consultaoficinas", response_model=List[schemas.Oficina])
+async def read_oficinas(skip: int = 0, limit: int = 10, db: Session = Depends(database.get_db)):
+    oficinas = crud.get_oficinas(db, skip=skip, limit=limit)
+    return oficinas
+
+@app.get("/oficinas", response_model=List[schemas.Oficina])
+async def list_oficinas(db: Session = Depends(database.get_db)):
+    oficinas = db.query(models.Oficina).all()
+    return oficinas
+
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.post("/cadastroprofessor", response_class=HTMLResponse)
+async def create_professor(request: Request, db: Session = Depends(database.get_db), nome: str = Form(...), email: str = Form(...), senha: str = Form(...)):
+    professor = models.Professor(nome=nome, email=email, hashed_password=auth.get_password_hash(senha))
+    db.add(professor)
+    db.commit()
+    db.refresh(professor)
+    return templates.TemplateResponse("professorcadastrado.html", {"request": request, "professor": professor})
+
+@app.get("/cadastroprofessor", response_class=HTMLResponse)
+async def read_cadastroprofessor(request: Request):
+    return templates.TemplateResponse("cadastroprofessor.html", {"request": request})
+
+ 
+@app.get("/cadastrooficina", response_class=HTMLResponse)
+async def read_cadastrooficina(request: Request):
+    return templates.TemplateResponse("cadastrooficina.html", {"request": request})
+
+
+@app.get("/presenca", response_class=HTMLResponse)
+async def read_presenca(request: Request):
+    return templates.TemplateResponse("presenca.html", {"request": request})
+
+@app.get("/login", response_class=HTMLResponse)
+async def read_login_page(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.post("/login")
+async def login(request: Request, db: Session = Depends(database.get_db), email: str = Form(...), password: str = Form(...)):
+    user = crud.authenticate_user(db, email, password)
+    if not user:
+        return templates.TemplateResponse("index.html", {"request": request, "error": "Invalid email or password"})
+    token = auth.create_access_token(data={"sub": user.email})
+    response = RedirectResponse(url="/dashboard", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(key="access_token", value=f"Bearer {token}", httponly=True)
+    return response
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def read_dashboard(request: Request):
+    token = request.cookies.get("access_token")
+    return templates.TemplateResponse("dashboard.html", {"request": request,"token": token})  
+
+@app.get("/oficinacadastrada", response_class=HTMLResponse)
+async def read_oficinacadastrada(request: Request):
+    return templates.TemplateResponse("oficinacadastrada.html", {"request": request})    
+
+@app.get("/cadastroaluno", response_class=HTMLResponse)
+async def read_cadastroaluno(request: Request):
+    return templates.TemplateResponse("cadastroaluno.html", {"request": request})
+
+@app.post("/alunos/", response_class=HTMLResponse)
+async def create_aluno(request: Request, registro_academico: str = Form(...), nome: str = Form(...), email: str = Form(...), telefone: str = Form(...), db: Session = Depends(database.get_db)):
+    db_aluno = crud.get_aluno_by_email(db, email=email)
+    if db_aluno:
+        return templates.TemplateResponse("cadastroaluno.html", {"request": request, "error": "Email already registered"})
+    aluno = schemas.AlunoCreate(registro_academico=registro_academico, nome=nome, email=email, telefone=telefone)
+    created_aluno = crud.create_aluno(db=db, aluno=aluno)
+    return templates.TemplateResponse("alunocadastrado.html", {"request": request, "aluno": created_aluno})
+
+@app.get("/gerarcertificados", response_class=HTMLResponse)
+async def read_gerarcertificados(request: Request):
+    token = request.cookies.get("access_token")
+    return templates.TemplateResponse("gerarcertificados.html", {"request": request,"token": token})  
+>>>>>>> Stashed changes
