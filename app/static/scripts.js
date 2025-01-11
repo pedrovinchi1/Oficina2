@@ -1,7 +1,6 @@
 const baseUrl = "http://localhost:8000";
 
 document.addEventListener("DOMContentLoaded", () => {
-   
     document.getElementById("register-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -66,25 +65,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.getElementById("presenca-form").addEventListener("submit", async (event) => {
+    document.getElementById('presenca-form').addEventListener('submit', async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const data = Object.fromEntries(formData.entries());
         const token = localStorage.getItem("token");
 
         const response = await fetch(`${baseUrl}/presencas/`, {
-            method: "POST",
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(data)
         });
 
         if (response.ok) {
-            alert("Presença registrada com sucesso!");
+            const result = await response.json();
+            alert(result.message);
         } else {
-            alert("Erro ao registrar presença.");
+            const error = await response.json();
+            alert(`Erro: ${error.detail}`);
         }
     });
 });
