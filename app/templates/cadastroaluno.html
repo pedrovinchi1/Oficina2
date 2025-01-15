@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <header>
+        <h1>Sistema de Emissão de Certificados</h1>
+    </header>
 
+    <main>
     <section id="cadastroaluno">
         <h2>Cadastro de Aluno</h2>
         <form action="/alunos/" method="post">
@@ -27,7 +31,7 @@
         </form>
         <nav class="menu">
             <ul>
-                <li><a href="/">Voltar</a></li>
+                <li><a href="/dashboard">Voltar</a></li>
             </ul>
         </nav>
         {% if error %}
@@ -37,5 +41,6 @@
         {% endif %}
 
     </section>
+    </main>
 </body>
 </html>

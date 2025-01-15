@@ -14,25 +14,39 @@
     <main>
         <section id="presenca">
             <h2>Registro de Presença</h2>
-            <form id="presenca-form">
+            <form id="presenca-form" action="/presencas/" method="POST">
                 <label for="registro-academico">Registro Acadêmico:</label>
                 <input type="text" id="registro-academico" name="registro_academico" required>
                 
-                <label for="oficina-id">ID da Oficina:</label>
-                <input type="number" id="oficina-id" name="oficina_id" required>
+                <label for="oficina-id">Oficina:</label>
+                <select id="oficina-id" name="oficina_id" required>
+                    <option value="">Selecione uma oficina</option>
+                </select>
                 
                 <button type="submit">Registrar Presença</button>
-                <nav class="menu">
-                    <ul>
-                        <li><a href="/">Sair</a></li>
-                        <li><a href="dashboard">Voltar</a></li>
-
-                    </ul>
-                </nav>
             </form>
+            <nav class="menu">
+                <ul>
+                    <li><a href="/dashboard">Voltar</a></li>
+                </ul>
+            </nav>
         </section>
     </main>
 
     <script src="/static/scripts.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const response = await fetch("/oficinas");
+            const oficinas = await response.json();
+            const select = document.getElementById("oficina-id");
+
+            oficinas.forEach(oficina => {
+                const option = document.createElement("option");
+                option.value = oficina.id;
+                option.textContent = oficina.titulo;
+                select.appendChild(option);
+            });
+        });
+    </script>
 </body>
 </html>
