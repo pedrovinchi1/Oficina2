@@ -15,14 +15,14 @@
         <section id="presenca">
             <h2>Registro de Presença</h2>
             <form id="presenca-form" action="/presencas/" method="POST">
-                <label for="registro-academico">Registro Acadêmico:</label>
-                <input type="text" id="registro-academico" name="registro_academico" required>
-                
-                <label for="oficina-id">Oficina:</label>
-                <select id="oficina-id" name="oficina_id" required>
+                <label for="registro_academico">Registro Acadêmico:</label>
+                <input type="number" id="registro_academico" name="registro_academico" required>
+
+                <label for="oficina_id">Oficina:</label>
+                <select id="oficina_id" name="oficina_id" required>
                     <option value="">Selecione uma oficina</option>
                 </select>
-                
+
                 <button type="submit">Registrar Presença</button>
             </form>
             <nav class="menu">
@@ -38,7 +38,7 @@
         document.addEventListener("DOMContentLoaded", async () => {
             const response = await fetch("/oficinas");
             const oficinas = await response.json();
-            const select = document.getElementById("oficina-id");
+            const select = document.getElementById("oficina_id");
 
             oficinas.forEach(oficina => {
                 const option = document.createElement("option");

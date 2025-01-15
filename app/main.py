@@ -1,12 +1,13 @@
 from typing import List
 from fastapi import APIRouter, FastAPI, Depends, Form, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, JSONResponse as jsonify
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from app import models, schemas, crud, database, auth
+from app.database import get_db
 import logging
 
 app = FastAPI()
@@ -39,28 +40,28 @@ async def create_professor(request: Request, nome: str = Form(...), email: str =
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_professor(db=db, professor=schemas.ProfessorCreate(nome=nome, email=email, password=password))
 
+
 @app.post("/presencas/", response_class=HTMLResponse)
 async def create_presenca(
     request: Request,
     oficina_id: int = Form(...),
-    registro_academico: str = Form(...),
+    registro_academico: int = Form(...),
     db: Session = Depends(database.get_db)
 ):
     try:
-        presenca = schemas.PresencaCreate(
-            oficina_id=oficina_id,
-            registro_academico=registro_academico
+        new_presenca = schemas.PresencaCreate(
+            aluno_id=registro_academico,  # aluno_id no schema corresponde a registro_academico
+            oficina_id=oficina_id
         )
-        crud.create_presenca(db=db, presenca=presenca)
+        crud.create_presenca(db, new_presenca)
         return templates.TemplateResponse(
-            "presenca_registrada.html", 
-            {"request": request, "message": "Presença registrada com sucesso!"}
-        )
-    except Exception as e:
-        return templates.TemplateResponse(
-            "presenca.html", 
-            {"request": request, "error": str(e)}
-        )
+            "presencaregistrada.html",{"request": request,"message": "Presença registrada com sucesso!"},status_code=200)
+    except HTTPException as e:
+        return HTMLResponse(content=e.detail, status_code=e.status_code)
+    except Exception as ex:
+        logging.error(f"Erro ao registrar presença: {ex}")
+        return HTMLResponse(content="Erro ao registrar presença.", status_code=500)
+
 
 @app.post("/create-oficina")
 async def create_oficina(request: Request, db: Session = Depends(database.get_db), titulo: str = Form(...), descricao: str = Form(...)):
@@ -109,9 +110,10 @@ async def read_cadastrooficina(request: Request):
 
 
 @app.get("/presenca", response_class=HTMLResponse)
-async def read_presenca(request: Request):
+async def read_presenca(request: Request, db: Session = Depends(database.get_db)):
+    oficinas = db.query(models.Oficina).all()
     token = request.cookies.get("access_token")
-    return templates.TemplateResponse("presenca.html", {"request": request, "token": token})
+    return templates.TemplateResponse("presenca.html", {"request": request, "oficinas": oficinas, "token": token})
 
 @app.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
@@ -158,5 +160,19 @@ async def read_gerarcertificados(request: Request):
 async def logout(request: Request):
     response = RedirectResponse(url="/")
     response.delete_cookie(key="access_token")
-    response.delete_cookie(key="other_cookie_if_any")  # Adicione outros cookies se necessário
+    response.delete_cookie(key="other_cookie_if_any")  
     return response
+
+@app.get("/aluno/{registro_academico}", response_class=JSONResponse)
+async def get_aluno(registro_academico: int, db: Session = Depends(get_db)):
+    aluno = crud.get_aluno_by_registro_academico(db, registro_academico)
+    if aluno is None:
+        return JSONResponse(status_code=404, content={"message": "Aluno não encontrado"})
+    return aluno
+
+@app.put("/aluno/{registro_academico}", response_class=JSONResponse)
+async def update_aluno(registro_academico: int, aluno: schemas.AlunoUpdate, db: Session = Depends(get_db)):
+    updated_aluno = crud.update_aluno(db, registro_academico, aluno)
+    if updated_aluno is None:
+        return JSONResponse(status_code=404, content={"message": "Aluno não encontrado"})
+    return updated_aluno

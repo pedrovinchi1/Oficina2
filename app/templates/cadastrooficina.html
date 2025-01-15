@@ -20,19 +20,43 @@
             
             <label for="descricao">Descrição:</label>
             <textarea id="descricao" name="descricao" required></textarea>
-
-            
             <button type="submit">Cadastrar Oficina</button>
-            <nav class="menu">
-                <ul>
-                    <li><a href="/logout">Sair</a></li>
-                    <li><a href="dashboard">Voltar</a></li>
-                </ul>
-            </nav>
+            
+
         </form>
+
+        <h1>Alteração de Oficinas</h1>
+    <select id="oficinaSelect" onchange="carregarDadosOficina()">
+        <option value="">Selecione uma oficina</option>
+        <!-- ...adicionar opções dinamicamente... -->
+    </select>
+
+    <input type="text" id="titulo" placeholder="Título" />
+    <textarea id="descricao" placeholder="Descrição"></textarea>
+    <button onclick="salvarAlteracoes()">Salvar</button>
+
+    <nav class="menu">
+        <ul>
+            <li><a href="dashboard">Voltar</a></li>
+        </ul>
+    </nav>
     </section>
-    </main>
+</main>
+
 
     <script src="/static/scripts.js"></script>
+    <script>
+        function carregarDadosOficina() {
+            const oficinaSelecionada = document.getElementById('oficinaSelect').value;
+            document.getElementById('titulo').value = 'Título da Oficina';
+            document.getElementById('descricao').value = 'Descrição da Oficina';
+        }
+
+        function salvarAlteracoes() {
+            const titulo = document.getElementById('titulo').value;
+            const descricao = document.getElementById('descricao').value;
+            console.log('Enviar atualização:', { titulo, descricao });
+        }
+    </script>
 </body>
-</html
+</html>
