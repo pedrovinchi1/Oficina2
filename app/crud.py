@@ -64,6 +64,8 @@ def create_presenca(db: Session, presenca: schemas.PresencaCreate):
 def get_presenca(db: Session, oficina_id: int):
     return db.query(models.Presenca).filter(models.Presenca.oficina_id == oficina_id).all()
 
+def get_presenca_by_aluno(db: Session, registro_academico: int):
+    return db.query(models.Presenca).filter(models.Presenca.registro_academico == registro_academico).all()
 
 def authenticate_user(db: Session, email: str, password: str):
     return authenticate_professor(db, email, password)
@@ -102,3 +104,6 @@ def update_aluno(db: Session, registro_academico: int, aluno_update: schemas.Alu
     db.commit()
     db.refresh(aluno)
     return aluno
+
+def get_oficina(db: Session, oficina_id: int):
+    return db.query(models.Oficina).filter(models.Oficina.id == oficina_id).first()

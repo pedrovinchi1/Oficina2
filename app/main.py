@@ -1,8 +1,11 @@
 from typing import List
 from fastapi import APIRouter, FastAPI, Depends, Form, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, JSONResponse as jsonify
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, JSONResponse as jsonify, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
+from fpdf import FPDF
+
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
@@ -11,6 +14,14 @@ from app.database import get_db
 import logging
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite todas as origens, ajuste conforme necessário
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos os métodos HTTP
+    allow_headers=["*"],  # Permite todos os cabeçalhos
+)
+
 router = APIRouter()
 
 templates = Jinja2Templates(directory="app/templates")
@@ -151,10 +162,35 @@ async def create_aluno(request: Request, registro_academico: str = Form(...), no
     created_aluno = crud.create_aluno(db=db, aluno=aluno)
     return templates.TemplateResponse("alunocadastrado.html", {"request": request, "aluno": created_aluno})
 
-@app.get("/gerarcertificados", response_class=HTMLResponse)
+@router.get("/gerarcertificados", response_class=HTMLResponse)
 async def read_gerarcertificados(request: Request):
-    token = request.cookies.get("access_token")
-    return templates.TemplateResponse("gerarcertificados.html", {"request": request,"token": token})
+    return templates.TemplateResponse("gerarcertificados.html", {"request": request})
+
+@router.post("/consultar-presencas", response_class=HTMLResponse)
+async def consultar_presencas(request: Request, registro_academico: int = Form(...), db: Session = Depends(database.get_db)):
+    aluno = crud.get_aluno_by_registro_academico(db, registro_academico)
+    if not aluno:
+        return templates.TemplateResponse("gerarcertificados.html", {"request": request, "error": "Aluno não encontrado"})
+    presencas = crud.get_presenca_by_aluno(db, registro_academico)
+    return templates.TemplateResponse("gerarcertificados.html", {"request": request, "aluno": aluno, "presencas": presencas})
+
+@router.post("/gerar-certificado", response_class=FileResponse)
+async def gerar_certificado(request: Request, oficina_id: int = Form(...), registro_academico: int = Form(...), db: Session = Depends(database.get_db)):
+    aluno = crud.get_aluno_by_registro_academico(db, registro_academico)
+    oficina = crud.get_oficina(db, oficina_id)
+    if not aluno or not oficina:
+        raise HTTPException(status_code=404, detail="Aluno ou Oficina não encontrado")
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Certificado de Participação", ln=True, align='C')
+    pdf.ln(10)
+    pdf.multi_cell(0, 10, txt=f"Certificamos que o aluno {aluno.nome}, registro acadêmico {aluno.registro_academico}, participou da oficina {oficina.titulo}.")
+    pdf_file = f"certificado_{aluno.registro_academico}_{oficina.id}.pdf"
+    pdf.output(pdf_file)
+
+    return FileResponse(pdf_file, media_type='application/pdf', filename=pdf_file)
 
 @app.get("/logout")
 async def logout(request: Request):
@@ -176,3 +212,5 @@ async def update_aluno(registro_academico: int, aluno: schemas.AlunoUpdate, db: 
     if updated_aluno is None:
         return JSONResponse(status_code=404, content={"message": "Aluno não encontrado"})
     return updated_aluno
+
+app.include_router(router)
