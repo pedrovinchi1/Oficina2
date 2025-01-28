@@ -42,30 +42,15 @@ def create_aluno(db: Session, aluno: schemas.AlunoCreate):
     return db_aluno
 
 def create_presenca(db: Session, presenca: schemas.PresencaCreate):
-    # Valida se a presença já foi registrada para o aluno na oficina
-    db_presenca_existente = db.query(models.Presenca).filter(
-        models.Presenca.registro_academico == presenca.aluno_id,
-        models.Presenca.oficina_id == presenca.oficina_id
-    ).first()
-
-    if db_presenca_existente:
-        raise HTTPException(status_code=400, detail="Presença já registrada para este aluno na oficina")
-
-    # Criação da nova presença
-    db_presenca = models.Presenca(
-        registro_academico=presenca.aluno_id,
-        oficina_id=presenca.oficina_id
-    )
+    db_presenca = models.Presenca(**presenca.dict())
     db.add(db_presenca)
     db.commit()
     db.refresh(db_presenca)
     return db_presenca
 
-def get_presenca(db: Session, oficina_id: int):
+def get_presencas(db: Session, oficina_id: int):
     return db.query(models.Presenca).filter(models.Presenca.oficina_id == oficina_id).all()
 
-def get_presenca_by_aluno(db: Session, registro_academico: int):
-    return db.query(models.Presenca).filter(models.Presenca.registro_academico == registro_academico).all()
 
 def authenticate_user(db: Session, email: str, password: str):
     return authenticate_professor(db, email, password)
@@ -90,20 +75,3 @@ def create_aluno(db: Session, aluno: schemas.AlunoCreate):
 
 def get_aluno(db: Session, aluno_id: str):
     return db.query(models.Aluno).filter(models.Aluno.registro_academico == aluno_id).first()
-
-def get_aluno_by_registro_academico(db: Session, registro_academico: int):
-    return db.query(models.Aluno).filter(models.Aluno.registro_academico == registro_academico).first()
-
-def update_aluno(db: Session, registro_academico: int, aluno_update: schemas.AlunoUpdate):
-    aluno = get_aluno_by_registro_academico(db, registro_academico)
-    if aluno is None:
-        return None
-    aluno.nome = aluno_update.nome
-    aluno.email = aluno_update.email
-    aluno.telefone = aluno_update.telefone
-    db.commit()
-    db.refresh(aluno)
-    return aluno
-
-def get_oficina(db: Session, oficina_id: int):
-    return db.query(models.Oficina).filter(models.Oficina.id == oficina_id).first()
