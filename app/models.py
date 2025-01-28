@@ -28,9 +28,9 @@ class Aluno(Base):
     presencas = relationship("Presenca", back_populates="aluno")
 
 class Presenca(Base):
-    __tablename__ = "presencas"
+    __tablename__ = "presenca"
     id = Column(Integer, primary_key=True, index=True)
-    aluno_id = Column(Integer, ForeignKey("alunos.registro_academico"))
+    registro_academico = Column(Integer, ForeignKey("alunos.registro_academico"))
     oficina_id = Column(Integer, ForeignKey("oficinas.id"))
     aluno = relationship("Aluno", back_populates="presencas")  
-    oficina = relationship("Oficina", back_populates="presencas") 
+    oficina = relationship("Oficina", back_populates="presencas")

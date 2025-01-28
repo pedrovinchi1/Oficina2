@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from fastapi import Form
+from datetime import datetime
 
 class ProfessorBase(BaseModel):
     nome: str
@@ -47,18 +48,18 @@ class Aluno(AlunoBase):
         orm_mode = True
 
 class PresencaBase(BaseModel):
-    aluno_id: int
+    aluno_id: int  # Altere para o nome correto da coluna
     oficina_id: int
 
 class PresencaCreate(PresencaBase):
     pass
 
 class Presenca(PresencaBase):
-    id: int
+    id: int  # Inclua o ID como resposta para consultas
 
     class Config:
         orm_mode = True
-
+        
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -70,3 +71,8 @@ class ProfessorForm(BaseModel):
     nome: str
     email: str
     password: str
+
+class AlunoUpdate(BaseModel):
+    nome: str
+    email: str
+    telefone: str
