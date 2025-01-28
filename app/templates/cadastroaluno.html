@@ -7,35 +7,90 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <header>
+        <h1>Sistema de Emissão de Certificados</h1>
+    </header>
 
-    <section id="cadastroaluno">
-        <h2>Cadastro de Aluno</h2>
-        <form action="/alunos/" method="post">
-            <label for="registro_academico">Registro Acadêmico:</label>
-            <input type="text" id="registro_academico" name="registro_academico" required>
+    <main>
+        <section>
+            <h1>Cadastro de Aluno</h1>
+            <form>
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+                
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" required>
+                
+                <button type="submit">Cadastrar</button>
+            </form>
+            <nav class="menu">
+                <ul>
+                    <li><a href="/dashboard">Voltar</a></li>
+                </ul>
+            </nav>
+        </section>
+
+        <section>
+            <h1>Alteração de Aluno</h1>
+            <label for="registroAcademico">Registro Acadêmico:</label>
+            <input type="text" id="registroAcademico" name="registroAcademico">
+            <button onclick="buscarAluno()">Buscar</button>
+
+            <label for="nomeAlteracao">Nome:</label>
+            <input type="text" id="nomeAlteracao" name="nomeAlteracao">
             
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" required>
+            <label for="emailAlteracao">Email:</label>
+            <input type="email" id="emailAlteracao" name="emailAlteracao">
             
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <label for="telefoneAlteracao">Telefone:</label>
+            <input type="text" id="telefoneAlteracao" name="telefoneAlteracao">
             
-            <label for="telefone">Telefone:</label>
-            <input type="text" id="telefone" name="telefone" required>
-            
-            <button type="submit">Cadastrar</button>
-        </form>
-        <nav class="menu">
-            <ul>
-                <li><a href="/">Voltar</a></li>
-            </ul>
-        </nav>
+            <button onclick="salvarAlteracoesAluno()">Salvar Alterações</button>
+            <nav class="menu">
+                <ul>
+                    <li><a href="/dashboard">Voltar</a></li>
+                </ul>
+            </nav>
+        </section>
+
+
         {% if error %}
         <script>
             alert("{{ error }}");
         </script>
         {% endif %}
+    </main>
 
-    </section>
+    <script>
+        function buscarAluno() {
+            const registroAcademico = document.getElementById('registroAcademico').value;
+            fetch(`/aluno/${registroAcademico}`)
+                .then(response => response.json())
+                .then(aluno => {
+                    document.getElementById('nomeAlteracao').value = aluno.nome;
+                    document.getElementById('emailAlteracao').value = aluno.email;
+                    document.getElementById('telefoneAlteracao').value = aluno.telefone;
+                });
+        }
+
+        function salvarAlteracoesAluno() {
+            const registroAcademico = document.getElementById('registroAcademico').value;
+            const nome = document.getElementById('nomeAlteracao').value;
+            const email = document.getElementById('emailAlteracao').value;
+            const telefone = document.getElementById('telefoneAlteracao').value;
+            fetch(`/aluno/${registroAcademico}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome, email, telefone })
+            })
+            .then(response => response.json())
+            .then(resp => {
+                alert('Aluno atualizado com sucesso!');
+            });
+        }
+    </script>
 </body>
 </html>
