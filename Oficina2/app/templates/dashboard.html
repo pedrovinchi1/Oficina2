@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Emissão de Certificados</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Emissão de Certificados</h1>
+        <h2>Bem Vindo ao Seu Dashboard</h2>
+    </header>
+    <nav class="menu">
+            <ul>
+                <li><a href="/cadastrooficina">Cadastro Oficina</a></li>
+                <li><a href="/cadastroaluno">Cadastro Aluno</a></li>
+                <li><a href="/atuaizaprof">Atualizar Professor</a></li>
+                <li><a href="/presenca">Presença</a></li>
+                <li><a href="/gerarcertificados">Gerar Certificados</a></li>
+                <li><a href="/">Sair</a></li>
+            </ul>
+        </nav>
+
+    <footer>
+        <p>Seu token de acesso é: {{ token }}</p>        
+        <p>&copy; 2024. Todos os direitos reservados.</p>
+    </footer>
+    <script src="/static/scripts.js"></script>
+</body>
+</html>

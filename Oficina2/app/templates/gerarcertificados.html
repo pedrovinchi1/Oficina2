@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Certificados</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>Gerar Certificados</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Consultar Presenças</h2>
+            <form action="/consultar-presencas" method="post">
+                <label for="registro_academico">Registro Acadêmico:</label>
+                <input type="number" id="registro_academico" name="registro_academico" required>
+                <button type="submit">Consultar</button>
+            </form>
+        </section>
+        {% if aluno %}
+        <section>
+            <h2>Presenças de {{ aluno.nome }}</h2>
+            <form action="/gerar-certificado" method="post">
+                <input type="hidden" name="registro_academico" value="{{ aluno.registro_academico }}">
+                <label for="oficina_id">Selecione a Oficina:</label>
+                <select id="oficina_id" name="oficina_id" required>
+                    {% for presenca in presencas %}
+                    <option value="{{ presenca.oficina.id }}">{{ presenca.oficina.titulo }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Gerar Certificado</button>
+            </form>
+        </section>
+        {% endif %}
+        {% if error %}
+        <section>
+            <p>{{ error }}</p>
+        </section>
+        {% endif %}
+    </main>
+    <nav class="menu">
+        <ul>
+            <li><a href="/dashboard">Voltar ao Dashboard</a></li>
+        </ul>
+    </nav>
+</body>
+</html>
