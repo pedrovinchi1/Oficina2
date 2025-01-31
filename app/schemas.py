@@ -1,11 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr  # Adicionado EmailStr
 from typing import List, Optional
 from fastapi import Form
 from datetime import datetime
 
 class ProfessorBase(BaseModel):
     nome: str
-    email: str
+    email: EmailStr  # Alterado de str para EmailStr
 
 class ProfessorCreate(ProfessorBase):
     password: str
@@ -35,7 +35,7 @@ class Oficina(OficinaBase):
 class AlunoBase(BaseModel):
     registro_academico: int
     nome: str
-    email: str
+    email: EmailStr  # Alterado de str para EmailStr
     telefone: Optional[str] = None
 
 class AlunoCreate(AlunoBase):

@@ -1,5 +1,10 @@
 {
     "dataworkspace.excludedProjects": [
         "certificados/certificados.sqlproj"
-    ]
+    ],
+    "python.testing.pytestArgs": [
+        "app"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
