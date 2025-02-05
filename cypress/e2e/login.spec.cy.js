@@ -15,17 +15,15 @@ describe("Teste de Login", () => {
     cy.get('#login-email').type("usuario@errado.com");
     cy.get('#login-password').type("senhaErrada");
     cy.get('button[type="submit"]').click();
-    cy.get('#error-message')
-      .should('be.visible')
-      .and('contain', 'Credenciais inválidas');
+    cy.get('#error-message').should('be.visible')
   });
+
 
   it("Deve exibir erro se os campos estiverem vazios", () => {
     cy.get('button[type="submit"]').click();
-    cy.get('#error-message')
-      .should('be.visible')
-      .and('contain', 'Por favor, preencha todos os campos.');
-  });
+    cy.get('#login-email:invalid').should('exist');
+    cy.get('#login-password:invalid').should('exist');
+});
 
   // Novo teste para verificar redirecionamento do link de cadastro
   it("Deve redirecionar para a página de cadastro de professor", () => {

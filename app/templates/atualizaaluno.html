@@ -14,6 +14,9 @@
     <main>
         <section id="atualizaçãoaluno">
             <h2>Alteração de Cadastro</h2>
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
             <form id="update-aluno-form" action="/aluno/update" method="post">
                 <label for="update-registro_academico">Registro Acadêmico:</label>
                 <input type="text" id="update-registro_academico" name="registro_academico" required>

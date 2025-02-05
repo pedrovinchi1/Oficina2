@@ -301,7 +301,7 @@ async def update_aluno(
     aluno_update = schemas.AlunoUpdate(nome=nome, email=email, telefone=telefone)
     updated_aluno = crud.update_aluno(db, registro_academico, aluno_update)
     if updated_aluno is None:
-        return templates.TemplateResponse("cadastroaluno.html", {"request": request, "error": "Aluno não encontrado"})
+        return templates.TemplateResponse("atualizaaluno.html", {"request": request, "error": "Error ao atualizar aluno"})
     return templates.TemplateResponse("alunocadastrado.html", {"request": request, "aluno": updated_aluno})
 
 
