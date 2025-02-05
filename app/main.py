@@ -75,13 +75,13 @@ async def create_presenca(
         return HTMLResponse(content="Erro ao registrar presença.", status_code=500)
 
 
+
 @app.post("/create-oficina")
 async def create_oficina(request: Request, db: Session = Depends(database.get_db), titulo: str = Form(...), descricao: str = Form(...)):
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    token = token.replace("Bearer ", "")
-    current_professor = await auth.get_current_professor(token=token, db=db)
+    current_professor = await auth.get_current_professor(token=token.split(" ")[1], db=db)
     new_oficina = models.Oficina(titulo=titulo, descricao=descricao, professor_id=current_professor.id)
     db.add(new_oficina)
     db.commit()
