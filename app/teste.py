@@ -82,6 +82,7 @@ def test_create_oficina_success(test_client):
         headers={"Authorization": f"Bearer {token}"},
         allow_redirects=True
     )
+    test_client.cookies = {"access_token": f"Bearer {token}"}
     assert response.status_code == 200
 
 def test_register_presenca_success(test_client):

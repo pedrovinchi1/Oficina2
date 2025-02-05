@@ -80,7 +80,8 @@ async def create_oficina(request: Request, db: Session = Depends(database.get_db
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    current_professor = await auth.get_current_professor(token=token.split(" ")[1], db=db)
+    token = token.replace("Bearer ", "")
+    current_professor = await auth.get_current_professor(token=token, db=db)
     new_oficina = models.Oficina(titulo=titulo, descricao=descricao, professor_id=current_professor.id)
     db.add(new_oficina)
     db.commit()
@@ -214,13 +215,6 @@ async def update_aluno(registro_academico: int, aluno: schemas.AlunoUpdate, db: 
         return JSONResponse(status_code=404, content={"message": "Aluno não encontrado"})
     return updated_aluno
 
-@app.post("/aluno/update", response_class=HTMLResponse)
-async def update_aluno(request: Request, registro_academico: int = Form(...), nome: str = Form(...), email: str = Form(...), telefone: str = Form(...), db: Session = Depends(database.get_db)):
-    aluno_update = schemas.AlunoUpdate(nome=nome, email=email, telefone=telefone)
-    updated_aluno = crud.update_aluno(db, registro_academico, aluno_update)
-    if updated_aluno is None:
-        return templates.TemplateResponse("cadastroaluno.html", {"request": request, "error": "Aluno não encontrado"})
-    return templates.TemplateResponse("alunocadastrado.html", {"request": request, "aluno": updated_aluno})
 
 @app.post("/update-oficina")
 async def update_oficina(
@@ -290,5 +284,25 @@ async def get_professor_by_email(email: str, db: Session = Depends(get_db)):
     if professor is None:
         return JSONResponse(status_code=404, content={"message": "Professor não encontrado"})
     return {"id": professor.id, "nome": professor.nome, "email": professor.email}
+
+@app.get("/atualizaaluno", response_class=HTMLResponse)
+async def read_atualizaaluno(request: Request):
+    return templates.TemplateResponse("atualizaaluno.html", {"request": request})
+
+@app.post("/aluno/update", response_class=HTMLResponse)
+async def update_aluno(
+    request: Request,
+    registro_academico: int = Form(...),
+    nome: str = Form(...),
+    email: str = Form(...),
+    telefone: str = Form(...),
+    db: Session = Depends(database.get_db)
+):
+    aluno_update = schemas.AlunoUpdate(nome=nome, email=email, telefone=telefone)
+    updated_aluno = crud.update_aluno(db, registro_academico, aluno_update)
+    if updated_aluno is None:
+        return templates.TemplateResponse("cadastroaluno.html", {"request": request, "error": "Aluno não encontrado"})
+    return templates.TemplateResponse("alunocadastrado.html", {"request": request, "aluno": updated_aluno})
+
 
 app.include_router(router)

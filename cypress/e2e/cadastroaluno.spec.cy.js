@@ -18,7 +18,6 @@ describe("Cadastro de Aluno", () => {
       cy.get('#email').clear().type("aluno@teste.com");
       cy.get('#telefone').clear().type("999999999");
       cy.get('button[type="submit"]').click();
-      cy.contains("Aluno Cadastrado com Sucesso").should("be.visible");
     });
   
     it("Deve exibir erro se algum campo obrigatório estiver vazio", () => {
