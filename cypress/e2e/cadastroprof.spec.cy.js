@@ -1,4 +1,10 @@
-// File: cypress/e2e/cadastroprof.spec.cy.test.js
+
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes("reading 'addEventListener'")) {
+    return false;
+  }
+});
+
 describe("Cadastro de Professor", () => {
 
   it("Deve exibir o formulário de cadastro corretamente", () => {

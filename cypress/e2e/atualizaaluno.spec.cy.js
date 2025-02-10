@@ -27,9 +27,8 @@ describe('Atualização de Aluno', () => {
     });
 
 
-
-    it('Deve redirecionar para o dashboard ao clicar no link "Voltar"', () => {
-        cy.get('nav.menu ul li a').click();
+    it('Deve redirecionar para o dashboard ao clicar no botão "Voltar"', () => {
+        cy.get('nav.menu ul li a').contains('Voltar').click();
         cy.url().should('include', '/dashboard');
     });
 });

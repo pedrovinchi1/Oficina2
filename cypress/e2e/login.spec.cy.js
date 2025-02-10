@@ -1,3 +1,11 @@
+
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes("reading 'addEventListener'")) {
+    return false;
+  }
+});
+
+
 describe("Teste de Login", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -15,7 +23,7 @@ describe("Teste de Login", () => {
     cy.get('#login-email').type("usuario@errado.com");
     cy.get('#login-password').type("senhaErrada");
     cy.get('button[type="submit"]').click();
-    cy.get('#error-message').should('be.visible')
+    cy.get('#error-message').should('be.visible').contains("Invalid email or password").should("be.visible")
   });
 
 

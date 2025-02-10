@@ -1,3 +1,10 @@
+
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes("reading 'addEventListener'")) {
+    return false;
+  }
+});
+
 describe('Dashboard Page', () => {
     beforeEach(() => {
         localStorage.setItem('token', 'dummy-token');

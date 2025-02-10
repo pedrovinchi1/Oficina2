@@ -1,6 +1,7 @@
 
 describe("Cadastro de Aluno", () => {
   
+  
     it("Deve exibir o formulário de cadastro de aluno", () => {
       cy.visit("/cadastroaluno");
       cy.contains("Cadastro de Aluno").should("be.visible");
