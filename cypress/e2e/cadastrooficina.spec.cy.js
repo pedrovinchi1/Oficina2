@@ -1,11 +1,9 @@
-
 Cypress.on('uncaught:exception', (err) => {
     if (err.message.includes("reading 'addEventListener'")) {
       return false;
     }
-  });
+});
   
-
 describe("Teste de Cadastro e Alteração de Oficina", () => {
     beforeEach(() => {
       localStorage.setItem('token', 'dummy-token');
@@ -27,37 +25,24 @@ describe("Teste de Cadastro e Alteração de Oficina", () => {
       cy.get("#update-oficina button").should("be.visible");
     });
 
-    
     it("Deve cadastrar uma nova oficina", () => {
         const tituloOficina = "Oficina de Teste Cypress";
         const descricaoOficina = "Descrição da oficina de teste criada via Cypress";
-    
-        // Preenche o formulário de cadastro
+ 
         cy.get("#titulo").type(tituloOficina);
         cy.get("#descricao").type(descricaoOficina);
-    
-        // Intercepta a requisição POST para '/create-oficina'
         cy.intercept('POST', '/create-oficina').as('createOficina');
-    
-        // Submete o formulário
         cy.get("#create-oficina button[type='submit']").click();
-    
-        // Aguarda a requisição ser completada
         cy.wait('@createOficina').then((interception) => {
           expect(interception.response.statusCode).to.eq(200);
         });
-    
-        // Verifica se foi redirecionado para a página de sucesso (ou exibe um alerta, dependendo da sua aplicação)
-        cy.url().should('include', '/oficinacadastrada');
-      });
+       cy.url().should('include', '/oficinacadastrada');
+        });
 
-
-
-      it("Deve carregar as oficinas no select", () => {
-        // Aguarda um tempo para que as oficinas sejam carregadas
-        cy.wait(1000); // Ajuste o tempo conforme necessário
-        cy.get("#oficinaSelect option").should("have.length.greaterThan", 1); // Inclui a opção "Selecione uma oficina"
-      });
+    it("Deve carregar as oficinas no select", () => {
+        cy.wait(1000); 
+        cy.get("#oficinaSelect option").should("have.length.greaterThan", 1); 
+    });
     
     it("Deve preencher e salvar as alterações de uma oficina", () => {
         cy.wait(1000);
@@ -74,10 +59,42 @@ describe("Teste de Cadastro e Alteração de Oficina", () => {
         cy.on('window:alert', (str) => {
           expect(str).to.equal('Oficina atualizada com sucesso!');
         });
-      });
-    
+    });
 
+    it("Deve exibir erro ao tentar cadastrar oficina com título vazio", () => {
+        cy.get("#descricao").type("Descrição da oficina sem título");
+        cy.get("#create-oficina button[type='submit']").click();
+        cy.contains("Preencha todos os campos").should("be.visible");
+    });
 
+    it("Deve exibir erro ao tentar cadastrar oficina com descrição vazia", () => {
+        cy.get("#titulo").type("Oficina sem descrição");
+        cy.get("#create-oficina button[type='submit']").click();
+        cy.contains("Preencha todos os campos").should("be.visible");
+    });
 
-    
-  });
+    it("Deve exibir erro ao tentar alterar oficina sem selecionar uma oficina", () => {
+        cy.get("#update-titulo").clear().type("Novo Título");
+        cy.get("#update-descricao").clear().type("Nova Descrição");
+        cy.get("#update-oficina button").click();
+        cy.contains("Selecione uma oficina para alterar").should("be.visible");
+    });
+
+    it("Deve exibir erro ao tentar alterar oficina com título vazio", () => {
+        cy.get("#oficinaSelect").select("Oficina de Teste Cypress");
+        cy.wait(500);
+        cy.get("#update-titulo").clear();
+        cy.get("#update-descricao").clear().type("Nova Descrição");
+        cy.get("#update-oficina button").click();
+        cy.contains("Preencha todos os campos").should("be.visible");
+    });
+
+    it("Deve exibir erro ao tentar alterar oficina com descrição vazia", () => {
+        cy.get("#oficinaSelect").select("Oficina de Teste Cypress");
+        cy.wait(500);
+        cy.get("#update-titulo").clear().type("Novo Título");
+        cy.get("#update-descricao").clear();
+        cy.get("#update-oficina button").click();
+        cy.contains("Preencha todos os campos").should("be.visible");
+    });
+});

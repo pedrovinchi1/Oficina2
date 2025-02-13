@@ -110,7 +110,9 @@ async def create_professor(request: Request, db: Session = Depends(database.get_
     db.add(professor)
     db.commit()
     db.refresh(professor)
-    return templates.TemplateResponse("professorcadastrado.html", {"request": request, "professor": professor})
+    response = RedirectResponse(url="/professorcadastrado", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(key="access_token", value=f"Bearer {auth.create_access_token(data={'sub': professor.email})}", httponly=True)
+    return response
 
 @app.get("/cadastroprofessor", response_class=HTMLResponse)
 async def read_cadastroprofessor(request: Request):
@@ -316,5 +318,9 @@ async def update_aluno(
 async def get_alunos_por_nome(nome: str, db: Session = Depends(get_db)):
     alunos = crud.get_alunos_por_nome(db, nome)
     return alunos
+
+@app.get("/professorcadastrado", response_class=HTMLResponse)
+async def read_professorcadastrado(request: Request):
+    return templates.TemplateResponse("professorcadastrado.html", {"request": request})
 
 app.include_router(router)
