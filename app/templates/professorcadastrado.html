@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Emissão de Certificados</title>
+    <title>Professor Cadastrado com Sucesso</title>
     <link rel="stylesheet" href="/static/style.css">
     <script>
         // Redireciona para o dashboard após 5 segundos
         setTimeout(function() {
             window.location.href = "/dashboard";
-        }, 7000);
+        }, 5000);
     </script>
 </head>
 <body>
@@ -19,13 +19,11 @@
     <main>
         <section>
             <h1>Professor Cadastrado com Sucesso</h1>
-            <p>Nome: {{ professor.nome }}</p>
-            <p>Email: {{ professor.email }}</p>
             <p>Redirecionando para o dashboard em 5 segundos...</p>
         </section>
     </main>
     <footer>
         <p>&copy; 2025 Sistema de Emissão de Certificados. Todos os direitos reservados.</p>
-
     </footer>
+</body>
 </html>

@@ -122,6 +122,12 @@ def update_professor(db: Session, professor_id: int, professor_update: schemas.P
     professor = db.query(models.Professor).filter(models.Professor.id == professor_id).first()
     if professor is None:
         return None
+
+    # Verifica se o email já está registrado para outro professor
+    existing_professor = db.query(models.Professor).filter(models.Professor.email == professor_update.email).first()
+    if existing_professor and existing_professor.id != professor_id:
+        raise HTTPException(status_code=400, detail="Email já registrado para outro professor")
+
     professor.nome = professor_update.nome
     professor.email = professor_update.email
     professor.hashed_password = professor_update.hashed_password
@@ -131,3 +137,6 @@ def update_professor(db: Session, professor_id: int, professor_update: schemas.P
 
 def get_professor_by_email(db: Session, email: str):
     return db.query(models.Professor).filter(models.Professor.email == email).first()
+
+def get_alunos_por_nome(db: Session, nome: str):
+    return db.query(models.Aluno).filter(models.Aluno.nome.ilike(f"%{nome}%")).all()

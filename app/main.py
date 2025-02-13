@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, FastAPI, Depends, Form, HTTPException, Request, status
+from fastapi import APIRouter, FastAPI, Depends, Form, HTTPException, Request, status, Query
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, JSONResponse as jsonify, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -263,16 +263,24 @@ async def update_professor(
         email=email,
         hashed_password=hashed_password
     )
-    updated_professor = crud.update_professor(db, professor_id, professor_update)
-    if updated_professor is None:
+    try:
+        updated_professor = crud.update_professor(db, professor_id, professor_update)
+        if updated_professor is None:
+            return templates.TemplateResponse(
+                "atualizaprof.html",
+                {"request": request, "error": "Professor não encontrado"}
+            )
         return templates.TemplateResponse(
-            "atualizaprof.html",
-            {"request": request, "error": "Professor não encontrado"}
+            "professoratualizado.html",
+            {"request": request, "professor": updated_professor}
         )
-    return templates.TemplateResponse(
-        "professoratualizado.html",
-        {"request": request, "professor": updated_professor}
-    )
+    except HTTPException as e:
+        if e.status_code == 400:
+            return templates.TemplateResponse(
+                "atualizaprof.html",
+                {"request": request, "error": e.detail}
+            )
+        raise e
 
 @app.get("/atuaizaprof", response_class=HTMLResponse)
 async def read_atualizaprof(request: Request):
@@ -304,5 +312,9 @@ async def update_aluno(
         return templates.TemplateResponse("atualizaaluno.html", {"request": request, "error": "Error ao atualizar aluno"})
     return templates.TemplateResponse("alunocadastrado.html", {"request": request, "aluno": updated_aluno})
 
+@app.get("/alunos/nome/{nome}", response_class=JSONResponse)
+async def get_alunos_por_nome(nome: str, db: Session = Depends(get_db)):
+    alunos = crud.get_alunos_por_nome(db, nome)
+    return alunos
 
 app.include_router(router)

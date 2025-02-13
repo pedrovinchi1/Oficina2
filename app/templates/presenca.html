@@ -15,8 +15,11 @@
         <section id="presenca">
             <h2>Registro de Presença</h2>
             <form id="presenca-form" action="/presencas/" method="post">
-                <label for="registro-academico">Registro Acadêmico:</label>
-                <input type="text" id="registro-academico" name="registro_academico" required>
+                <label for="aluno-nome">Nome do Aluno:</label>
+                <input type="text" id="aluno-nome" name="aluno_nome" oninput="buscarAlunosPorNome()" required>
+                <select id="aluno-seletor" name="registro_academico" required>
+                    <option value="">Selecione um aluno</option>
+                </select>
                 
                 <label for="oficina-id">Selecione a Oficina:</label>
                 <select id="oficina-id" name="oficina_id" required>
@@ -36,9 +39,26 @@
     </main>
 
     <script src="/static/scripts.js"></script>
+    <script>
+        async function buscarAlunosPorNome() {
+            const nome = document.getElementById('aluno-nome').value;
+            if (nome.length < 2) {
+                return;
+            }
+            const response = await fetch(`/alunos/nome/${nome}`);
+            const alunos = await response.json();
+            const seletor = document.getElementById('aluno-seletor');
+            seletor.innerHTML = '<option value="">Selecione um aluno</option>';
+            alunos.forEach(aluno => {
+                const option = document.createElement('option');
+                option.value = aluno.registro_academico;
+                option.textContent = aluno.nome;
+                seletor.appendChild(option);
+            });
+        }
+    </script>
     <footer>
         <p>&copy; 2025 Sistema de Emissão de Certificados. Todos os direitos reservados.</p>
-
     </footer>
 </body>
 </html>
